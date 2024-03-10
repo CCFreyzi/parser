@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "node parser.js"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "puppeteer": "^22.4.0"
   }
 }

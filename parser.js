@@ -1,23 +1,30 @@
-const puppeteer = require('puppeteer');
-const parsers_function = require('./parsers_function');
-const gpts_requests = require('./gpts_requests');
+import puppeteer from "puppeteer";
+import { getPageTitle, getMeinInf } from "./parsers_function.js";
+import { openaiChat } from "./gpts_requests.js";
 
 (async () => {
-    const browser = await puppeteer.launch({headless: false})
-    const page = await browser.newPage()
-    await page.goto('https://cryptopotato.com/shiba-inu-shib-explodes-65-daily-dogecoin-doge-follows-suit-with-20-surge-weekend-watch/')
+    const browser = await puppeteer.launch({
+        headless: false,
+        // executablePath:
+        //     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    });
+    const page = await browser.newPage();
+    await page.goto(
+        "https://cryptopotato.com/shiba-inu-shib-explodes-65-daily-dogecoin-doge-follows-suit-with-20-surge-weekend-watch/"
+    );
 
-    const language = 'UA'
+    const language = "UA";
 
-    const title = await parsers_function.getPageTitle(page);
+    const title = await getPageTitle(page);
+    const mainInf = await getMeinInf(page);
 
-    const mainInf = await parsers_function.getMeinInf(page);
+    const chatResponse = await openaiChat(title, mainInf, language);
 
-    const chatResponse = await gpts_requests(title, mainInf, language);
-
-    console.log(chatResponse.choices[0].message.content);
-    console.log(title);
-    console.log(mainInf);
+    console.log(JSON.parse(chatResponse.choices[0].message.content));
+    // console.log(JSON.parse(chatResponse.choices[0].message.title));
+    // console.log(chatResponse);
+    // console.log(title);
+    // console.log(mainInf);
 
     await browser.close();
-})()
+})();
