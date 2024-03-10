@@ -1,12 +1,12 @@
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import { getPageTitle, getMeinInf } from "./parsers_function.js";
 import { openaiChat } from "./gpts_requests.js";
 
 (async () => {
     const browser = await puppeteer.launch({
         headless: false,
-        executablePath:
-            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        // executablePath:
+        //     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     });
     const page = await browser.newPage();
     await page.goto(

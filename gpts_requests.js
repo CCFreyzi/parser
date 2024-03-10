@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 export const openaiChat = async (title, mainInf, language) => {
@@ -12,9 +13,9 @@ export const openaiChat = async (title, mainInf, language) => {
                 content: `I have an article: title: ${title},
                 main content: ${mainInf}. Paraphrase this article and translations into ${language} language, 
                 and return it in the same format json object {"title": "", "contents": [{}]}`,
-},
-],
-};
+            },
+        ],
+    };
 
     try {
         const response = await fetch(
