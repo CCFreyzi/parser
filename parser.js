@@ -1,30 +1,24 @@
 import puppeteer from "puppeteer";
 import { getPageTitle, getMeinInf } from "./parsers_function.js";
 import { openaiChat } from "./gpts_requests.js";
+import {createPost} from "./create_post.js";
 
 (async () => {
     const browser = await puppeteer.launch({
         headless: false,
-        // executablePath:
-        //     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     });
     const page = await browser.newPage();
     await page.goto(
-        "https://cryptopotato.com/shiba-inu-shib-explodes-65-daily-dogecoin-doge-follows-suit-with-20-surge-weekend-watch/"
+        "https://cryptopotato.com/bitcoin-explodes-to-71k-charts-new-all-time-high/"
     );
 
-    const language = "UA";
+    const language = "ukrainian";
 
     const title = await getPageTitle(page);
     const mainInf = await getMeinInf(page);
-
     const chatResponse = await openaiChat(title, mainInf, language);
 
-    console.log(JSON.parse(chatResponse.choices[0].message.content));
-    // console.log(JSON.parse(chatResponse.choices[0].message.title));
-    // console.log(chatResponse);
-    // console.log(title);
-    // console.log(mainInf);
+    await createPost(JSON.parse(chatResponse.choices[0].message.content).title, JSON.parse(chatResponse.choices[0].message.content).content);
 
     await browser.close();
 })();
