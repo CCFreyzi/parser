@@ -2,11 +2,20 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const getPosts = async () => {
+export const getOwnPosts = async () => {
     const response = await fetch('https://staging2.band-it.space/wp-json/wp/v2/posts');
     const posts = await response.json();
-    console.log(posts);
-    return posts;
+    // console.log(posts)
+    const pattern = /([^/]+)\/?$/;
+    const postsUrl = []
+    posts.map((post) => {
+        postsUrl.push(post.link.match(pattern)[1])
+    })
+    return postsUrl;
+};
+
+export const ownPosts = async () => {
+    return await getOwnPosts();
 };
 
 const getToken = async () => {
@@ -26,8 +35,8 @@ const getToken = async () => {
         return user.token;
 };
 
-export const createPost = async (title, content) => {
-    const response = await fetch('http://staging2.band-it.space/wp-json/wp/v2/posts', {
+export const createPost = async (title, content, postDonorSlug) => {
+    const response = await fetch('http://staging2.band-it.space/wp-json/post-slug/v2/create', {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -37,10 +46,12 @@ export const createPost = async (title, content) => {
         body: JSON.stringify({
             title: `${title}`,
             content: `${content}`,
-            status: "publish"
+            status: "publish",
+            slug: `${postDonorSlug}`,
         })
     });
 
     const post = await response.json();
-    console.log(post);
+    console.log(post)
 };
+// createPost('title', 'title', 'title')
