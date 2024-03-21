@@ -3,9 +3,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const getOwnPosts = async () => {
-    const response = await fetch('https://staging2.band-it.space/wp-json/wp/v2/posts');
+    const response = await fetch('https://staging2.band-it.space/wp-json/wp/v2/posts?_embed&meta_keys=custom_keeeeey');
     const posts = await response.json();
-    // console.log(posts)
     const pattern = /([^/]+)\/?$/;
     const postsUrl = []
     posts.map((post) => {
@@ -27,16 +26,15 @@ const getToken = async () => {
             },
             body: JSON.stringify({
                 username: 'admin',
-                password: '2ih2G8Tt5Y',
+                password: '$Osj!^wqqdChVktpVa&kcae^',
             })
         });
         const user = await response.json();
-        console.log(user.token);
         return user.token;
 };
 
-export const createPost = async (title, content, postDonorSlug) => {
-    const response = await fetch('http://staging2.band-it.space/wp-json/post-slug/v2/create', {
+export const createPost = async (title, content, postDonorSlug, imgId) => {
+    const response = await fetch('http://staging2.band-it.space/wp-json/wp/v2/posts', {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -46,12 +44,11 @@ export const createPost = async (title, content, postDonorSlug) => {
         body: JSON.stringify({
             title: `${title}`,
             content: `${content}`,
+            featured_media: `${imgId}`,
             status: "publish",
             slug: `${postDonorSlug}`,
         })
     });
 
     const post = await response.json();
-    console.log(post)
 };
-// createPost('title', 'title', 'title')
