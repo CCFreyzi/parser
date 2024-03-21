@@ -2,11 +2,11 @@ import puppeteer from "puppeteer";
 import {sendMessage} from './gpts_requests.js'
 import {openaiChat} from './gpts_requests.js'
 import {createPost} from './create_post.js'
+import {createImg} from "./generate_img.js";
 
 export const getPageTitle = async (page) => {
     return await page.evaluate(() => {
         return (
-            "H1: " +
             document
                 .querySelector(".page-title h1")
                 .innerHTML.replace(/^\s+|\s+$/g, "")
@@ -51,6 +51,40 @@ export const getPostFromPage = async (page) => {
     });
 }
 
+export const getAllPostUrl = async () => {
+    const allPost = []
+
+    const browser = await puppeteer.launch({
+        headless: false,
+    });
+    const page = await browser.newPage();
+    await page.goto(
+        "https://cryptopotato.com/category/crypto-news/"
+    );
+
+    const numberPages = await getPagesNumber(page);
+    await browser.close();
+
+    for (let pageNum = 1; pageNum <= 2; pageNum++) {
+        const browser = await puppeteer.launch({
+            headless: false,
+        });
+        const page = await browser.newPage();
+
+        await page.goto(
+            `https://cryptopotato.com/category/crypto-news/page/${pageNum}/`
+        );
+
+        const allPostFromPage = await getPostFromPage(page);
+        const pattern = /([^/]+)\/?$/;
+        allPostFromPage.map((postUrl) => {
+            allPost.push(postUrl.match(pattern)[1])
+        })
+
+        await browser.close();
+    }
+    return allPost
+}
 
 
 export const addNewPost = async (postDonorSlug) => {
@@ -66,13 +100,19 @@ export const addNewPost = async (postDonorSlug) => {
 
     const title = await getPageTitle(page);
     const content = await getMeinInf(page);
-    const answer = await sendMessage(title, content, language);
 
-    // console.log(title)
-    // console.log(content)
-    // console.log(language)
+    const imgId = await createImg(title)
 
-    await createPost(answer.title, answer.content, postDonorSlug);
+    let answer;
+    try {
+        answer = await sendMessage(title, content, language);
+    } catch (error) {
+        console.error("Помилка під час відправки повідомлення:", error);
+        await browser.close();
+        return;
+    }
+
+    await createPost(answer.title, answer.content, postDonorSlug, imgId);
 
     await browser.close();
 };

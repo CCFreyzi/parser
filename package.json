@@ -8,6 +8,7 @@
     "start": "node parser.js"
   },
   "dependencies": {
+    "base-64": "^1.0.0",
     "dotenv": "^16.4.5",
     "openai": "^4.28.4",
     "puppeteer": "^22.4.0",
